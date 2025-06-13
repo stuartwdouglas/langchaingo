@@ -19,9 +19,10 @@ var ErrEmptyResponse = errors.New("empty response")
 type APIType string
 
 const (
-	APITypeOpenAI  APIType = "OPEN_AI"
-	APITypeAzure   APIType = "AZURE"
-	APITypeAzureAD APIType = "AZURE_AD"
+	APITypeOpenAI     APIType = "OPEN_AI"
+	APITypeAzure      APIType = "AZURE"
+	APITypeAzureAD    APIType = "AZURE_AD"
+	APITypeDatabricks APIType = "DATABRICKS"
 )
 
 // Client is a client for the OpenAI API.
@@ -152,9 +153,13 @@ func IsAzure(apiType APIType) bool {
 	return apiType == APITypeAzure || apiType == APITypeAzureAD
 }
 
+func IsDatabricks(apiType APIType) bool {
+	return apiType == APITypeDatabricks
+}
+
 func (c *Client) setHeaders(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
-	if c.apiType == APITypeOpenAI || c.apiType == APITypeAzureAD {
+	if c.apiType == APITypeOpenAI || c.apiType == APITypeAzureAD || c.apiType == APITypeDatabricks {
 		req.Header.Set("Authorization", "Bearer "+c.token)
 	} else {
 		req.Header.Set("api-key", c.token)
@@ -167,6 +172,9 @@ func (c *Client) setHeaders(req *http.Request) {
 func (c *Client) buildURL(suffix string, model string) string {
 	if IsAzure(c.apiType) {
 		return c.buildAzureURL(suffix, model)
+	}
+	if IsDatabricks(c.apiType) {
+		return c.baseURL
 	}
 
 	// open ai implement:
