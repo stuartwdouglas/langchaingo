@@ -29,7 +29,7 @@ type StreamOptions struct {
 
 // ChatRequest is a request to complete a chat completion..
 type ChatRequest struct {
-	Model       string         `json:"model"`
+	Model       string         `json:"model,omitempty"`
 	Messages    []*ChatMessage `json:"messages"`
 	Temperature float64        `json:"temperature"`
 	TopP        float64        `json:"top_p,omitempty"`

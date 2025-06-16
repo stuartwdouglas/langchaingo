@@ -132,11 +132,15 @@ func (c *Client) CreateEmbedding(ctx context.Context, r *EmbeddingRequest) ([][]
 
 // CreateChat creates chat request.
 func (c *Client) CreateChat(ctx context.Context, r *ChatRequest) (*ChatCompletionResponse, error) {
-	if r.Model == "" {
-		if c.Model == "" {
-			r.Model = defaultChatModel
-		} else {
-			r.Model = c.Model
+	if IsDatabricks(c.apiType) {
+		r.Model = ""
+	} else {
+		if r.Model == "" {
+			if c.Model == "" {
+				r.Model = defaultChatModel
+			} else {
+				r.Model = c.Model
+			}
 		}
 	}
 	resp, err := c.createChat(ctx, r)
